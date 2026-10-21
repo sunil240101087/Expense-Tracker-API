@@ -1,0 +1,56 @@
+spring:
+  application:
+    name: expense-tracker-api
+  datasource:
+    url: jdbc:h2:mem:expensedb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=PostgreSQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+server:
+  port: 8080
+  error:
+    include-message: never
+    include-stacktrace: never
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: when_authorized
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+
+security:
+  jwt:
+    # Override via the SECURITY_JWT_SECRET environment variable in production.
+    secret: ${SECURITY_JWT_SECRET:change-me-to-a-long-random-secret-at-least-32-bytes-please}
+    expiration-minutes: 60
+
+# Seeds a demo admin account on startup (disabled under the "test" profile).
+app:
+  seed:
+    enabled: true
+    admin-email: admin@example.com
+    admin-password: Admin12345

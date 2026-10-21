@@ -1,0 +1,61 @@
+@host = http://localhost:8080
+
+### Register a new account (returns a JWT)
+# @name register
+POST {{host}}/api/v1/auth/register
+Content-Type: application/json
+
+{
+  "email": "jane@example.com",
+  "password": "Password123",
+  "displayName": "Jane Doe"
+}
+
+### Log in (returns a JWT)
+# @name login
+POST {{host}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "jane@example.com",
+  "password": "Password123"
+}
+
+### Capture the token from the login response above
+@token = {{login.response.body.accessToken}}
+
+### Get my profile
+GET {{host}}/api/v1/users/me
+Authorization: Bearer {{token}}
+
+### Create an expense
+POST {{host}}/api/v1/expenses
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "description": "Team lunch",
+  "amount": 42.50,
+  "category": "FOOD",
+  "spentOn": "2026-05-15"
+}
+
+### List expenses (paginated, newest first)
+GET {{host}}/api/v1/expenses?page=0&size=20&sort=spentOn,desc
+Authorization: Bearer {{token}}
+
+### Filter expenses by category and date range
+GET {{host}}/api/v1/expenses?category=FOOD&from=2026-05-01&to=2026-05-31
+Authorization: Bearer {{token}}
+
+### Spending summary by category
+GET {{host}}/api/v1/expenses/summary?from=2026-05-01&to=2026-05-31
+Authorization: Bearer {{token}}
+
+### Admin: list all users (requires ROLE_ADMIN)
+# Log in as the seeded admin (admin@example.com / Admin12345) to get an admin token.
+GET {{host}}/api/v1/admin/users
+Authorization: Bearer {{token}}
+
+### Health check (public)
+GET {{host}}/actuator/health
